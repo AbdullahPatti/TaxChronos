@@ -1,0 +1,4 @@
+{"query": "What is the tax rate on IT export services for PSEB registered freelancers?", "ground_truth": "0.25% under Section 154A if registered with PSEB."}
+{"query": "freelancer ki income pe tax kitna lagta hai agar annual 15 lac se kam ho", "ground_truth": "IT export proceeds registered with PSEB face 0.25% tax under Section 154A; otherwise 1% apply."}
+{"query": "Urdu IT export proceeds par withholding tax kitna hai?", "ground_truth": "Section 154A specifies 0.25% for PSEB registered and 1% for non-registered."}
+{"query": "What is the tax rate for local IT services under Section 153?", "ground_truth": "The rate is 4% for IT services and IT enabled services."}

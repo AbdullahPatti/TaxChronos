@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+qdrant-client
+redis
+google-generativeai
+langgraph
+langchain-core
+ragas
+sentence-transformers
+pypdf
+pdfplumber
+unstructured
+python-dotenv
+httpx
+sse-starlette
+openai
