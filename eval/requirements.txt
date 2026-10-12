@@ -1,0 +1,3 @@
+-r ../requirements.txt
+ragas==0.4.3
+instructor==1.17.0

@@ -1,0 +1,231 @@
+TAXCHRONOS - WHAT WAS DONE
+Date: 12 October 2026
+Scope: pipeline for the Income Tax Ordinance, 2001 (the only document so far)
+
+
+1. SUMMARY
+----------
+The project was rebuilt as an agentic Corrective RAG (CRAG) system on Supabase,
+following Context/RAG_Project_Blueprint.pdf, with these changes to the blueprint:
+
+  - Supabase Postgres (pgvector + full-text search) replaces Qdrant and Redis.
+  - Gemini embeddings replace the local BAAI/bge model.
+  - The API serves the UI itself, so one Render service is the whole deployment.
+
+Status:
+  - Tested: the parser, the Gemini prompts (router, grader, generator), the
+    LangGraph graph and the API.
+  - NOT tested yet: the Supabase SQL and the indexer. Docker was not running
+    and there is no database yet. They will run for the first time when you
+    do step 3 in section 9.
+  - Nothing has been committed to git.
+
+
+2. HOW A QUESTION IS ANSWERED (pipeline/graph.py, LangGraph)
+------------------------------------------------------------
+  1. route     One fast Gemini call detects the language (english / urdu /
+               roman_urdu) and the intent, and rewrites the question as an
+               English search query in the statute's wording.
+               Example: "freelancer ki income pe tax kitna lagta hai agar PSEB
+               registered ho?" becomes "income tax rate export proceeds IT
+               services freelancer PSEB registered section 154A".
+               Chit-chat and out-of-scope messages are answered here and skip
+               retrieval.
+
+  2. recall    Semantic cache. The English query is embedded and compared with
+               past answers (same language, same as-of date). A cosine
+               similarity of 0.92 or more returns the cached answer.
+
+  3. retrieve  Hybrid search in Postgres: vector search (pgvector) plus keyword
+               search (tsvector), merged with Reciprocal Rank Fusion (RRF) and
+               filtered to the law in force on the as-of date. Returns 12
+               candidates.
+
+  4. grade     One fast Gemini call labels each candidate relevant, ambiguous
+               or irrelevant. Up to 6 passages (relevant first) go forward. This
+               step also does the reranking, so no cross-encoder is needed.
+
+  5. rewrite   If nothing is relevant, the query is rewritten and retrieval
+               runs again, at most 2 times.
+
+  6. web       If retrieval still fails, Gemini searches the web with Google
+               grounding and the answer is labelled "unverified". If the web
+               search fails (e.g. quota), a clear "not found" message is
+               returned instead of an error.
+
+  7. generate  Gemini writes the answer in the user's language. Every claim
+               cites a passage as [n], and amendments are named by Finance Act.
+
+  8. remember  The answer is saved to the cache.
+
+
+3. TIME AWARENESS
+-----------------
+The FBR PDF is the consolidated text "amended up to 30th June, 2026". Its
+footnotes record every amendment, e.g. "Division IVA substituted by the Finance
+Act, 2022. The substituted Division read as follows: ...".
+
+  - Each current chunk carries its amendment notes, so answers can say when a
+    rule changed.
+  - Old wording quoted in a footnote becomes its own "superseded" chunk, with
+    effective_to set to 1 July of the Finance Act year. The ordinance yields
+    823 such chunks.
+  - Search keeps only chunks where effective_from <= as_of < effective_to.
+    Picking a date before July 2022 in the UI shows the old flat 1% rate for
+    Division IVA instead of today's 0.25%.
+
+Limit: dates are approximated as 1 July of the Finance Act year.
+
+
+4. FILES CREATED
+----------------
+  sources.json               Registry of documents to ingest.
+  ingestion/parse.py         PDF to section-aware chunks, with amendment notes
+                             and superseded versions. Output:
+                             data/processed/ITO_2001.json
+  indexing/index.py          Creates the database schema, embeds the chunks and
+                             upserts them into Supabase. It can resume after a
+                             failure and clears the cache when the corpus
+                             changes.
+  db/schema.sql              Tables (chunks, answers), indexes, row-level
+                             security, and the hybrid_search() function.
+  pipeline/__init__.py       Package marker.
+  pipeline/llm.py            Gemini helpers: embeddings, prompts, web search,
+                             retries and model fallback.
+  pipeline/store.py          Postgres helpers: hybrid search and the semantic
+                             cache.
+  pipeline/prompts.py        All prompts in one place.
+  pipeline/graph.py          The LangGraph corrective RAG pipeline.
+  api/main.py                FastAPI app. Streams each pipeline step over
+                             Server-Sent Events, validates input, limits each IP
+                             to 10 questions a minute, and serves the UI.
+  frontend/index.html        Single-page chat UI.
+  render.yaml                Render deployment blueprint.
+  .env.example               The environment variables you need.
+  eval/requirements.txt      Extra packages for evaluation (ragas, instructor).
+  README.md                  Architecture diagram, design choices, run
+                             instructions, eval table.
+  WORK_DONE.txt              This file.
+
+
+5. FILES CHANGED
+----------------
+  pipeline/naive_baseline.py Rewritten as the control group: vector search
+                             only, top 4 passages, simple prompt. Uses the same
+                             Supabase store.
+  eval/ragas_suite.py        Rewritten for the ragas 0.4 API. Usage:
+                               python eval/ragas_suite.py naive
+                               python eval/ragas_suite.py crag
+                             Reports faithfulness, answer relevancy, context
+                             precision, context recall and median latency.
+                             Saves progress after every question and resumes.
+  requirements.txt           Pinned versions; Qdrant, Redis,
+                             sentence-transformers and ragas removed from the
+                             deployed app.
+
+
+6. FILES DELETED (all still in git history)
+-------------------------------------------
+  test_qdrant.py                    Qdrant no longer used.
+  docker-compose.yml                Was empty; Supabase is hosted.
+  ingestion/parse_ito.py            Replaced by ingestion/parse.py.
+  indexing/imbed_and_upsert.py      Replaced by indexing/index.py.
+  data/processed/ito_2001_chunks.json  Old chunks with wrong section labels.
+  eval/naive_results.json           Old bge/Qdrant results; no longer a fair
+                                    comparison.
+
+
+7. KEY DECISIONS AND WHY
+------------------------
+  - New chunker. The old one mislabelled sections: 240 chunks were tagged
+    "Section 3: Others 0%". The new one reads the page header (Chapter /
+    Schedule), detects real section headings and schedule divisions, strips PDF
+    artifacts, and splits sections into chunks of at most 1,800 characters.
+    Result: 1,799 chunks (976 current + 823 superseded) across 620 sections.
+    The 154A rate table (First Schedule, Part III, Division IVA) is now its own
+    chunk.
+  - Supabase instead of Qdrant + Redis: one system for vectors, keyword search,
+    date filters and the cache, on the free tier.
+  - Gemini embeddings (gemini-embedding-001, 768 dimensions) instead of local
+    bge: multilingual, and they avoid torch, which does not fit in Render's
+    free 512 MB.
+  - Chunk ids are content hashes, so re-indexing only embeds new or changed
+    chunks and deletes stale ones.
+  - Row-level security is on for both tables, so the public Supabase API cannot
+    read them; only the backend's database user can.
+  - Models: gemini-3.5-flash-lite for routing and grading; gemini-3.8-flash for
+    answers, falling back to gemini-3.5-flash on overload.
+    gemini-2.5-flash returned 404 (retired for new users) and gemini-3.5-flash
+    returned 503 (overloaded) during testing. All three can be overridden with
+    the FAST_MODEL, SMART_MODEL and FALLBACK_MODEL environment variables.
+  - No code comments, as requested.
+
+
+8. WHAT WAS TESTED
+------------------
+  - Parser output checked: sections, schedule divisions, amendment notes and
+    superseded versions.
+  - Router: Roman Urdu question detected as factual / roman_urdu with a correct
+    154A search query. Greeting detected as chit-chat.
+  - Grader: kept exactly Section 154A and First Schedule Part III Division IVA.
+  - Generator: Roman Urdu and Urdu answers gave the correct 0.25% rate for
+    PSEB-registered exporters (tax years 2024 to 2029) with [n] citations and
+    Finance Act 2022 / 2023 / 2026 notes.
+  - API: /health works, / serves the UI, /chat streams step and answer events,
+    a 1-character question is rejected with 422.
+  - Graph compiles. Frontend JavaScript passes a syntax check. The eval setup
+    loads.
+
+  Not tested: db/schema.sql, indexing/index.py and the full end-to-end flow
+  against Supabase. The web fallback could not be checked either, because it
+  hit the free-tier search quota (429).
+
+
+9. WHAT YOU NEED TO DO
+----------------------
+  1. Create a Supabase project. Go to Project > Connect > Session pooler and
+     copy the URL (the direct connection is IPv6-only and will not work from
+     Render). Add it to .env:
+       DATABASE_URL=postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres
+  2. pip install -r requirements.txt
+  3. python indexing/index.py
+     This creates the tables and embeds about 1,800 chunks. If Gemini
+     rate-limits you, run it again; it resumes. If the SQL fails, send the
+     error.
+  4. uvicorn api.main:app --reload
+     Open http://localhost:8000 and try some questions.
+  5. Deploy: push to GitHub, then in Render choose New > Blueprint and pick the
+     repo (it reads render.yaml). Set GOOGLE_API_KEY and DATABASE_URL there.
+  6. Grow eval/codeswitch_eval_set.jsonl from 4 to 40-50 questions, then run:
+       pip install -r eval/requirements.txt
+       python eval/ragas_suite.py naive
+       python eval/ragas_suite.py crag
+     Put the numbers in the README table.
+
+
+10. ADDING A NEW DOCUMENT
+-------------------------
+  1. Put the PDF in data/raw/.
+  2. Add an entry to sources.json:
+       { "id": "STA_1990",
+         "title": "Sales Tax Act, 1990",
+         "file": "data/raw/<file>.pdf",
+         "effective_from": "1990-11-01",
+         "body_starts_at_page": <first page after the table of contents> }
+  3. python ingestion/parse.py STA_1990
+  4. python indexing/index.py STA_1990
+  Send the parse output for each new document so the parser can be tuned.
+  Statutes with the same layout should work as-is; SROs and circulars will
+  need their own heading rules.
+
+
+11. NOT DONE YET / KNOWN LIMITS
+-------------------------------
+  - GitHub Actions eval check on pull requests (add once the eval set is
+    larger).
+  - Vercel is not needed, because Render serves the UI.
+  - Free Supabase projects pause after a week with no activity.
+  - The rate limit is held in memory, which is fine for one Render instance.
+  - Upgrading instructor (to 1.17.0) left langchain-openai in the local venv
+    with a version conflict on openai. The project does not use
+    langchain-openai.

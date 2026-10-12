@@ -1,0 +1,9 @@
+[
+  {
+    "id": "ITO_2001",
+    "title": "Income Tax Ordinance, 2001",
+    "file": "data/raw/IncomeTaxOrdinance2001.pdf",
+    "effective_from": "2001-07-01",
+    "body_starts_at_page": 20
+  }
+]

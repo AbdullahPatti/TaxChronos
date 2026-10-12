@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TaxChronos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<style>
+:root {
+  --bg: #f6f3ec;
+  --surface: #fffdf8;
+  --ink: #14212b;
+  --muted: #5f6b73;
+  --line: #e4ddcf;
+  --navy: #12324a;
+  --copper: #c46f24;
+  --teal: #1f7a80;
+  --warn-bg: #fff3e0;
+  --warn-ink: #8a4b0f;
+  --shadow: 0 1px 2px rgba(20, 33, 43, .05), 0 8px 24px rgba(20, 33, 43, .06);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1820;
+    --surface: #15222c;
+    --ink: #e8ecef;
+    --muted: #9aa8b2;
+    --line: #253540;
+    --navy: #9cc7e4;
+    --copper: #e39a55;
+    --teal: #5fc1c7;
+    --warn-bg: #2d2214;
+    --warn-ink: #f0bc7f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.6 Inter, system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+[dir="rtl"], .urdu { font-family: "Noto Nastaliq Urdu", Inter, serif; line-height: 2.2; }
+header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.mark {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: var(--navy); color: var(--bg);
+  display: grid; place-items: center;
+  font: 600 18px Fraunces, serif;
+}
+.brand b { font: 600 19px Fraunces, serif; letter-spacing: -.01em; }
+.brand small { display: block; color: var(--muted); font-size: 12px; margin-top: -4px; }
+.asof { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.asof input {
+  font: inherit; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px;
+}
+main { flex: 1; width: 100%; max-width: 820px; margin: 0 auto; padding: 24px 16px 140px; }
+.hero { text-align: center; padding: 8vh 0 24px; }
+.hero h1 { font: 600 clamp(28px, 5vw, 42px)/1.15 Fraunces, serif; letter-spacing: -.02em; margin: 0 0 12px; color: var(--navy); }
+.hero p { color: var(--muted); max-width: 520px; margin: 0 auto 28px; }
+.samples { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.samples button {
+  font: inherit; font-size: 14px; color: var(--ink); cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+  padding: 8px 14px; box-shadow: var(--shadow); transition: border-color .15s, transform .15s;
+}
+.samples button:hover { border-color: var(--copper); transform: translateY(-1px); }
+.msg { margin: 22px 0; animation: rise .25s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } }
+.user { display: flex; justify-content: flex-end; }
+.user div {
+  background: var(--navy); color: var(--bg); border-radius: 16px 16px 4px 16px;
+  padding: 10px 16px; max-width: 80%; white-space: pre-wrap;
+}
+.bot {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 18px 20px; box-shadow: var(--shadow);
+}
+.steps { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.step {
+  font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
+  padding: 2px 10px; display: inline-flex; align-items: center; gap: 6px;
+}
+.step::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+.step.live::before { animation: pulse 1s infinite; background: var(--copper); }
+@keyframes pulse { 50% { opacity: .2; } }
+.query { font-size: 12px; color: var(--muted); margin: -4px 0 12px; }
+.query code { font-size: 12px; }
+.answer > :first-child { margin-top: 0; }
+.answer > :last-child { margin-bottom: 0; }
+.answer a.cite {
+  font-size: 11px; font-weight: 600; text-decoration: none; vertical-align: super;
+  color: var(--copper); padding: 0 2px;
+}
+.badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.badge { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 6px; background: color-mix(in srgb, var(--teal) 12%, transparent); color: var(--teal); }
+.badge.warn { background: var(--warn-bg); color: var(--warn-ink); }
+.badge.cache { background: color-mix(in srgb, var(--copper) 12%, transparent); color: var(--copper); }
+.sources { margin-top: 14px; display: grid; gap: 8px; }
+details { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+details[open] { background: color-mix(in srgb, var(--bg) 50%, var(--surface)); }
+summary { cursor: pointer; font-size: 14px; font-weight: 500; list-style: none; display: flex; gap: 10px; align-items: baseline; }
+summary::-webkit-details-marker { display: none; }
+summary .n { color: var(--copper); font-weight: 700; min-width: 18px; }
+summary .meta { margin-left: auto; color: var(--muted); font-size: 12px; font-weight: 400; white-space: nowrap; }
+details p { font-size: 13px; color: var(--muted); white-space: pre-wrap; margin: 10px 0 0; }
+details ul { font-size: 12px; color: var(--muted); margin: 8px 0 0; padding-left: 18px; }
+details a { color: var(--teal); word-break: break-all; }
+.error { color: var(--warn-ink); }
+form {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  padding: 16px; background: linear-gradient(transparent, var(--bg) 30%);
+}
+.composer {
+  max-width: 820px; margin: 0 auto; display: flex; gap: 8px; align-items: flex-end;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 8px; box-shadow: var(--shadow);
+}
+.composer:focus-within { border-color: var(--teal); }
+textarea {
+  flex: 1; resize: none; border: 0; outline: 0; background: transparent; color: var(--ink);
+  font: inherit; padding: 8px 10px; max-height: 160px;
+}
+.composer button {
+  border: 0; border-radius: 12px; background: var(--copper); color: #fff; cursor: pointer;
+  font: 600 14px Inter, sans-serif; padding: 10px 18px;
+}
+.composer button:disabled { opacity: .5; cursor: wait; }
+.note { max-width: 820px; margin: 6px auto 0; text-align: center; font-size: 11px; color: var(--muted); }
+@media (max-width: 560px) {
+  header { padding: 12px 16px; }
+  .brand small { display: none; }
+  summary .meta { display: none; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="mark">T</div>
+    <div><b>TaxChronos</b><small>Pakistani tax law, as of any date</small></div>
+  </div>
+  <label class="asof">Law as of <input type="date" id="asof"></label>
+</header>
+
+<main id="thread">
+  <section class="hero" id="hero">
+    <h1>Ask the law, in your own words.</h1>
+    <p>Grounded in the Income Tax Ordinance, 2001 as amended. Every answer cites its section and the date it was in force. English, Urdu or Roman Urdu.</p>
+    <div class="samples">
+      <button>freelancer ki income pe tax kitna lagta hai agar PSEB registered ho?</button>
+      <button>What is the withholding tax on IT export proceeds?</button>
+      <button>آئی ٹی ایکسپورٹ پر ٹیکس کی شرح کیا ہے؟</button>
+      <button>Who is required to file a return of income?</button>
+    </div>
+  </section>
+</main>
+
+<form id="form">
+  <div class="composer">
+    <textarea id="input" rows="1" dir="auto" placeholder="Ask about income tax, withholding, exemptions…" required></textarea>
+    <button id="send">Ask</button>
+  </div>
+  <div class="note">Not legal advice. Check the cited section before acting on it.</div>
+</form>
+
+<script>
+const STEPS = {
+  route: "Understood question",
+  recall: "Checked cache",
+  retrieve: "Hybrid search",
+  grade: "Graded evidence",
+  rewrite: "Rewrote query",
+  web: "Searched the web",
+  generate: "Wrote answer",
+  remember: "Cached answer",
+};
+const thread = document.getElementById("thread");
+const form = document.getElementById("form");
+const input = document.getElementById("input");
+const send = document.getElementById("send");
+const asof = document.getElementById("asof");
+let count = 0;
+
+const el = (tag, cls, text) => {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text != null) node.textContent = text;
+  return node;
+};
+
+const prettyDate = (iso) => new Date(iso + "T00:00:00").toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+
+function renderAnswer(box, data, id) {
+  const html = DOMPurify.sanitize(marked.parse(data.answer || ""));
+  const answer = el("div", "answer");
+  answer.dir = "auto";
+  if (data.language === "urdu") answer.classList.add("urdu");
+  answer.innerHTML = html.replace(/\[(\d+)\]/g, (_, n) => `<a class="cite" href="#c${id}-${n}">${n}</a>`);
+  box.append(answer);
+
+  const badges = el("div", "badges");
+  badges.append(el("span", "badge", `In force as of ${prettyDate(data.as_of)}`));
+  if (data.cached) badges.append(el("span", "badge cache", "Served from cache"));
+  if (!data.verified) badges.append(el("span", "badge warn", "Unverified · from the web, not the statute"));
+  box.append(badges);
+
+  if (!data.citations?.length) return;
+  const sources = el("div", "sources");
+  for (const c of data.citations) {
+    const item = el("details");
+    item.id = `c${id}-${c.n}`;
+    const summary = el("summary");
+    summary.append(el("span", "n", c.n), el("span", null, c.section || c.title));
+    if (c.section) {
+      const range = `${prettyDate(c.effective_from)} → ${c.effective_to ? prettyDate(c.effective_to) : "present"}`;
+      summary.append(el("span", "meta", `p. ${c.page} · ${range}`));
+    }
+    item.append(summary);
+    if (c.url) {
+      const link = el("a", null, c.url);
+      link.href = c.url;
+      link.target = "_blank";
+      link.rel = "noopener";
+      item.append(el("p")).append(link);
+    }
+    if (c.excerpt) item.append(el("p", null, c.excerpt + "…"));
+    if (c.amendments?.length) {
+      const list = el("ul");
+      c.amendments.forEach((a) => list.append(el("li", null, a)));
+      item.append(list);
+    }
+    sources.append(item);
+  }
+  box.append(sources);
+}
+
+async function ask(question) {
+  document.getElementById("hero")?.remove();
+  const id = ++count;
+  const user = el("div", "msg user");
+  user.append(el("div", null, question));
+  user.firstChild.dir = "auto";
+  const bot = el("div", "msg bot");
+  const steps = el("div", "steps");
+  const live = el("span", "step live", "Thinking");
+  steps.append(live);
+  bot.append(steps);
+  thread.append(user, bot);
+  bot.scrollIntoView({ behavior: "smooth", block: "end" });
+
+  send.disabled = true;
+  try {
+    const response = await fetch("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, as_of: asof.value || null }),
+    });
+    if (!response.ok) throw new Error((await response.json()).detail || "Request failed");
+    const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buffer = "";
+    let query = null;
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += value;
+      const events = buffer.split("\n\n");
+      buffer = events.pop();
+      for (const raw of events) {
+        const name = raw.match(/^event: (.*)$/m)?.[1];
+        const data = JSON.parse(raw.match(/^data: (.*)$/m)?.[1] || "{}");
+        if (name === "step") {
+          live.before(el("span", "step", STEPS[data.node] || data.node));
+          if (data.query) query = data.query;
+        }
+        if (name === "answer") {
+          live.remove();
+          if (query) {
+            const q = el("div", "query", "Searched for ");
+            q.append(el("code", null, query));
+            bot.append(q);
+          }
+          renderAnswer(bot, data, id);
+        }
+        if (name === "error") throw new Error(data.message);
+      }
+    }
+  } catch (error) {
+    live.remove();
+    bot.append(el("p", "error", error.message));
+  } finally {
+    send.disabled = false;
+    bot.scrollIntoView({ behavior: "smooth", block: "end" });
+  }
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const question = input.value.trim();
+  if (!question || send.disabled) return;
+  input.value = "";
+  input.style.height = "";
+  ask(question);
+});
+input.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" || e.shiftKey) return;
+  e.preventDefault();
+  form.requestSubmit();
+});
+input.addEventListener("input", () => {
+  input.style.height = "";
+  input.style.height = input.scrollHeight + "px";
+});
+document.querySelectorAll(".samples button").forEach((b) => b.addEventListener("click", () => ask(b.textContent)));
+</script>
+</body>
+</html>
