@@ -4,6 +4,112 @@
     "title": "Income Tax Ordinance, 2001",
     "file": "data/raw/IncomeTaxOrdinance2001.pdf",
     "effective_from": "2001-07-01",
-    "body_starts_at_page": 20
+    "body_starts_at_page": 20,
+    "text_only": true
+  },
+  {
+    "id": "ITR_2002",
+    "title": "Income Tax Rules, 2002",
+    "file": "data/raw/20269211394336470IncomeTaxRules2002.pdf",
+    "effective_from": "2002-07-01",
+    "body_starts_at_page": 16,
+    "body_ends_at_page": 455,
+    "unit": "Rule",
+    "drop": "^(?:Income Tax Rules, 2002 \\S+|INCOME|PART-\\w+|(?:FIRST|SECOND|THIRD|FOURTH|FIFTH|SIXTH|SEVENTH|EIGHTH|NINTH|TENTH|ELEVENTH|TWELFTH) SCHEDULE)$"
+  },
+  {
+    "id": "STA_1990",
+    "title": "Sales Tax Act, 1990",
+    "file": "data/raw/20267171373418951SalesTaxAct1990updatedupto30.06.2026.pdf",
+    "effective_from": "1990-11-01",
+    "body_starts_at_page": 7,
+    "running_header": false,
+    "drop": "^Sales Tax Act, 1990$"
+  },
+  {
+    "id": "PSTS_2012",
+    "title": "Punjab Sales Tax on Services Act, 2012",
+    "file": "data/raw/punjab-sales-tax-on-services-act-2012-pdf2.pdf",
+    "effective_from": "2012-06-27",
+    "body_starts_at_page": 5,
+    "running_header": false
+  },
+  {
+    "id": "FA_2026",
+    "title": "Finance Act, 2026",
+    "file": "data/raw/20266291261044366FinanceAct2026.pdf",
+    "effective_from": "2026-07-01",
+    "body_starts_at_page": 2,
+    "running_header": false,
+    "drop": "THE GAZETTE OF PAKISTAN, EXTRA"
+  },
+  {
+    "id": "WHT_CARD_2026",
+    "title": "FBR Withholding Income Tax Rate Card (updated to Finance Act, 2026; guide only, the Ordinance prevails)",
+    "file": "data/raw/202681113864992WithholdingTaxRatesCard2027.pdf",
+    "effective_from": "2026-07-01",
+    "body_starts_at_page": 1,
+    "layout": "card",
+    "vision": true,
+    "running_header": false
+  },
+  {
+    "id": "FEM_06",
+    "title": "SBP Foreign Exchange Manual, Chapter 6: Private Foreign Currency Accounts",
+    "file": "data/raw/Chapter-6-foreign-exchange-manual.pdf",
+    "effective_from": "2002-01-01",
+    "body_starts_at_page": 2,
+    "layout": "manual",
+    "unit": "Para",
+    "running_header": false
+  },
+  {
+    "id": "FEM_10",
+    "title": "SBP Foreign Exchange Manual, Chapter 10: Inward and Outward Remittances",
+    "file": "data/raw/Chapter-10-foreign-exchange-manual.pdf",
+    "effective_from": "2002-01-01",
+    "body_starts_at_page": 2,
+    "layout": "manual",
+    "unit": "Para",
+    "running_header": false
+  },
+  {
+    "id": "FEM_12",
+    "title": "SBP Foreign Exchange Manual, Chapter 12: Exports",
+    "file": "data/raw/Chapter-12-foreign-exchange-manual.pdf",
+    "effective_from": "2002-01-01",
+    "body_starts_at_page": 3,
+    "layout": "manual",
+    "unit": "Para",
+    "running_header": false
+  },
+  {
+    "id": "FEM_14",
+    "title": "SBP Foreign Exchange Manual, Chapter 14: Commercial Remittances",
+    "file": "data/raw/Chp-14-foreign-exchange-manual.pdf",
+    "effective_from": "2002-01-01",
+    "body_starts_at_page": 3,
+    "layout": "manual",
+    "unit": "Para",
+    "running_header": false
+  },
+  {
+    "id": "FEM_21",
+    "title": "SBP Foreign Exchange Manual, Chapter 21: Repatriation of Invisible Earnings of Foreign Exchange",
+    "file": "data/raw/Chapter-21-foreign-exchange-manual.pdf",
+    "effective_from": "2002-01-01",
+    "body_starts_at_page": 2,
+    "layout": "manual",
+    "unit": "Para",
+    "running_header": false
+  },
+  {
+    "id": "IRIS_MANUAL",
+    "title": "FBR IRIS 2.0 Return Filing Manual",
+    "file": "data/raw/IRIS_Return_Manual.pdf",
+    "effective_from": "2018-07-01",
+    "body_starts_at_page": 1,
+    "layout": "slides",
+    "running_header": false
   }
 ]
