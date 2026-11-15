@@ -9,6 +9,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from pipeline.graph import graph
+from pipeline.store import pool
 
 REQUESTS_PER_MINUTE = 10
 UI = Path(__file__).resolve().parent.parent / "frontend" / "index.html"
@@ -42,6 +43,8 @@ def index():
 
 @app.get("/health")
 def health():
+    with pool.connection() as conn:
+        conn.execute("select 1")
     return {"ok": True}
 
 

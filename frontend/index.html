@@ -116,8 +116,6 @@ main { flex: 1; width: 100%; max-width: 820px; margin: 0 auto; padding: 24px 16p
 }
 .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
 .badge { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 6px; background: color-mix(in srgb, var(--teal) 12%, transparent); color: var(--teal); }
-.badge.warn { background: var(--warn-bg); color: var(--warn-ink); }
-.badge.cache { background: color-mix(in srgb, var(--copper) 12%, transparent); color: var(--copper); }
 .sources { margin-top: 14px; display: grid; gap: 8px; }
 details { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
 details[open] { background: color-mix(in srgb, var(--bg) 50%, var(--surface)); }
@@ -168,7 +166,7 @@ textarea {
 <main id="thread">
   <section class="hero" id="hero">
     <h1>Ask the law, in your own words.</h1>
-    <p>Grounded in the Income Tax Ordinance, 2001 as amended. Every answer cites its section and the date it was in force. English, Urdu or Roman Urdu.</p>
+    <p>Grounded in Pakistan's income tax and sales tax law, the Finance Act 2026, FBR guides and the SBP Foreign Exchange Manual. Every answer cites its section and the date it was in force. English, Urdu or Roman Urdu.</p>
     <div class="samples">
       <button>freelancer ki income pe tax kitna lagta hai agar PSEB registered ho?</button>
       <button>What is the withholding tax on IT export proceeds?</button>
@@ -180,7 +178,7 @@ textarea {
 
 <form id="form">
   <div class="composer">
-    <textarea id="input" rows="1" dir="auto" placeholder="Ask about income tax, withholding, exemptions…" required></textarea>
+    <textarea id="input" rows="1" dir="auto" placeholder="Ask about income tax, sales tax, withholding, foreign exchange…" required></textarea>
     <button id="send">Ask</button>
   </div>
   <div class="note">Not legal advice. Check the cited section before acting on it.</div>
@@ -189,13 +187,10 @@ textarea {
 <script>
 const STEPS = {
   route: "Understood question",
-  recall: "Checked cache",
   retrieve: "Hybrid search",
   grade: "Graded evidence",
   rewrite: "Rewrote query",
-  web: "Searched the web",
   generate: "Wrote answer",
-  remember: "Cached answer",
 };
 const thread = document.getElementById("thread");
 const form = document.getElementById("form");
@@ -223,8 +218,6 @@ function renderAnswer(box, data, id) {
 
   const badges = el("div", "badges");
   badges.append(el("span", "badge", `In force as of ${prettyDate(data.as_of)}`));
-  if (data.cached) badges.append(el("span", "badge cache", "Served from cache"));
-  if (!data.verified) badges.append(el("span", "badge warn", "Unverified · from the web, not the statute"));
   box.append(badges);
 
   if (!data.citations?.length) return;

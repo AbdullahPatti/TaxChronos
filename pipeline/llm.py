@@ -8,7 +8,7 @@ load_dotenv()
 
 FAST = os.getenv("FAST_MODEL", "gemini-3.5-flash-lite")
 SMART = os.getenv("SMART_MODEL", "gemini-3.8-flash")
-FALLBACK = os.getenv("FALLBACK_MODEL", "gemini-3.5-flash")
+FALLBACKS = os.getenv("FALLBACK_MODEL", "gemini-3.5-flash,gemini-3.1-flash-lite").split(",")
 EMBEDDER = "gemini-embedding-001"
 DIMENSIONS = 768
 
@@ -31,13 +31,18 @@ def embed(texts, task="RETRIEVAL_QUERY"):
     return [e.values for e in response.embeddings]
 
 
+def can_fall_back(error):
+    return isinstance(error, errors.ServerError) or error.code in (404, 429)
+
+
 def generate(model, prompt, config):
-    try:
-        return client.models.generate_content(model=model, contents=prompt, config=config)
-    except errors.ServerError:
-        if model == FALLBACK:
-            raise
-        return client.models.generate_content(model=FALLBACK, contents=prompt, config=config)
+    chain = [model] + [m for m in FALLBACKS if m != model]
+    for candidate in chain:
+        try:
+            return client.models.generate_content(model=candidate, contents=prompt, config=config)
+        except errors.APIError as error:
+            if candidate == chain[-1] or not can_fall_back(error):
+                raise
 
 
 def ask(prompt, schema=None, model=FAST):
@@ -48,11 +53,3 @@ def ask(prompt, schema=None, model=FAST):
     )
     response = generate(model, prompt, config)
     return response.parsed if schema else response.text.strip()
-
-
-def search_web(prompt):
-    config = types.GenerateContentConfig(tools=[types.Tool(google_search=types.GoogleSearch())])
-    response = generate(SMART, prompt, config)
-    metadata = response.candidates[0].grounding_metadata
-    sources = [{"title": c.web.title, "url": c.web.uri} for c in (metadata and metadata.grounding_chunks or []) if c.web]
-    return response.text.strip(), sources

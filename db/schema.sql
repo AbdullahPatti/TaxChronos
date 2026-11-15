@@ -18,20 +18,7 @@ create index if not exists chunks_embedding_idx on chunks using hnsw (embedding 
 create index if not exists chunks_fts_idx on chunks using gin (fts);
 create index if not exists chunks_source_idx on chunks (source);
 
-create table if not exists answers (
-  id bigint generated always as identity primary key,
-  question text not null,
-  language text not null,
-  as_of date,
-  embedding vector(768) not null,
-  response jsonb not null,
-  created_at timestamptz not null default now()
-);
-
-create index if not exists answers_embedding_idx on answers using hnsw (embedding vector_cosine_ops);
-
 alter table chunks enable row level security;
-alter table answers enable row level security;
 
 create or replace function hybrid_search(
   query_text text,

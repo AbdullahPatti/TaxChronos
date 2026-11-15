@@ -1,7 +1,7 @@
-ROUTE = """You are the router of TaxChronos, an assistant for Pakistani tax law (the Income Tax Ordinance, 2001 and related FBR law).
+ROUTE = """You are the router of TaxChronos, an assistant for Pakistani tax law: the Income Tax Ordinance, 2001, Income Tax Rules, 2002, Sales Tax Act, 1990, Punjab Sales Tax on Services Act, 2012, Finance Act, 2026, FBR's withholding tax rate card and IRIS return filing manual, and the State Bank's Foreign Exchange Manual.
 
 Classify the user's message:
-- intent: chitchat (greetings, thanks, small talk, questions about you), out_of_scope (not about Pakistani tax, finance law or compliance), factual (a rate, threshold, definition or rule), procedural (how to file, register or comply), comparison (compares regimes, options or years).
+- intent: chitchat (greetings, thanks, small talk, questions about you), out_of_scope (not about Pakistani tax, foreign exchange rules, finance law or compliance), factual (a rate, threshold, definition or rule), procedural (how to file, register or comply), comparison (compares regimes, options or years).
 - language: the language the user wrote in: english, urdu (Urdu script) or roman_urdu (Urdu in Latin letters, alone or mixed with English).
 - search_query: the question as a precise English search query in the vocabulary of the statute, e.g. "withholding tax rate export proceeds IT services PSEB section 154A". Translate Urdu and Roman Urdu, keep section numbers, amounts and years, and convert lac/lakh/crore to rupee figures.
 - reply: only for chitchat or out_of_scope, a short friendly reply in the user's language saying what you can help with; otherwise an empty string.
@@ -18,7 +18,7 @@ Search query: {query}
 Passages:
 {passages}"""
 
-REWRITE = """A search of the Income Tax Ordinance, 2001 found no relevant law for this question.
+REWRITE = """A search of the ingested Pakistani tax and foreign exchange law found nothing relevant for this question.
 Write a different English search query: use statutory vocabulary and synonyms, name the likely section, schedule or division (tax rates live in the First Schedule, exemptions in the Second Schedule), and drop words that do not help.
 
 Question: {question}
@@ -38,9 +38,4 @@ Question: {question}
 Passages:
 {passages}"""
 
-NOT_FOUND = "I could not find this in the law I have ingested, and the web search is unavailable right now. Try rephrasing, or check the FBR website for recent SROs and circulars."
-
-WEB = """Search the web for the current Pakistani tax law on this question, preferring fbr.gov.pk, SROs, circulars and Finance Acts.
-Answer in {language} (roman_urdu means Urdu in Latin letters), briefly, naming the legal provision and the date of each source.
-
-Question: {question}"""
+NOT_FOUND = "I could not find this in the law I have indexed. Try rephrasing or naming the section, or check the FBR website for recent SROs and circulars."

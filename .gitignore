@@ -7,3 +7,4 @@ data/raw/
 .idea/
 .vscode/
 *.log
+cache/
