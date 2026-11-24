@@ -248,7 +248,7 @@ def sections(source):
                     label = line
             elif named:
                 label = named.group(1).title()
-            elif heading and last_number <= int(re.match(r"\d+", heading.group(1)).group()) <= last_number + 20:
+            elif heading and last_number <= int(re.match(r"\d+", heading.group(1)).group()) <= last_number + source.get("max_section_jump", 20):
                 last_number = int(re.match(r"\d+", heading.group(1)).group())
                 title = " ".join(re.sub(r"\d{1,4}\[|\]", "", heading.group(2)).split()).strip(" .")
                 label = f"{unit} {heading.group(1)}: {title}"

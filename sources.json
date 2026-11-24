@@ -41,6 +41,7 @@
     "effective_from": "2026-07-01",
     "body_starts_at_page": 2,
     "running_header": false,
+    "max_section_jump": 1,
     "drop": "THE GAZETTE OF PAKISTAN, EXTRA"
   },
   {

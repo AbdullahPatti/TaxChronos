@@ -10,6 +10,7 @@ from ingestion.parse import load_sources
 from pipeline import llm
 
 BATCH = 50
+EMBED_BATCH = 10  # ponytail: free tier caps embeds at 30k tokens/min; 50 long chunks blow it in one request
 CACHE = ROOT / "cache" / "embeddings"
 out_of_quota = False
 
@@ -42,8 +43,8 @@ def embed(source, chunks):
     fresh = [c for c in chunks if c["id"] not in known]
     print(f"{source['id']}: {len(chunks)} chunks, {len(fresh)} to embed")
     with path.open("a", encoding="utf-8") as out:
-        for start in range(0, 0 if out_of_quota else len(fresh), BATCH):
-            batch = fresh[start:start + BATCH]
+        for start in range(0, 0 if out_of_quota else len(fresh), EMBED_BATCH):
+            batch = fresh[start:start + EMBED_BATCH]
             try:
                 embeddings = llm.embed([embedding_text(c) for c in batch], task="RETRIEVAL_DOCUMENT")
             except llm.errors.ClientError as error:
