@@ -19,7 +19,7 @@ This is a retrieval project, so the dataset is a **text corpus**, not a table. T
 | | |
 |---|---|
 | Raw data | 12 official PDFs, 2,773 pages, 146 MB |
-| Cleaned data | [`data/processed/`](data/processed), 12 JSON files, 3,538 chunks, 5.4 MB |
+| Cleaned data | [`data/processed/`](data/processed), 12 JSON files, 3,540 chunks, 5.4 MB |
 | Record | one chunk of law (a section, rule, paragraph or table piece) |
 | Features | `id`, `source`, `title`, `section`, `page`, `content`, `amendments`, `effective_from`, `effective_to` |
 | Target variable | none. The system retrieves and cites; it does not predict a label |
@@ -32,7 +32,7 @@ The raw PDFs are too large for the repo. Download them into `data/raw/` with the
 | `ITO_2001` | Income Tax Ordinance, 2001 | 839 | 1,801 | [fbr.gov.pk](https://www.fbr.gov.pk), saved as `IncomeTaxOrdinance2001.pdf` |
 | `ITR_2002` | Income Tax Rules, 2002 | 1,198 | 689 | [download](https://download1.fbr.gov.pk/Docs/20269211394336470IncomeTaxRules2002.pdf) |
 | `STA_1990` | Sales Tax Act, 1990 | 229 | 294 | [download](https://download1.fbr.gov.pk/Docs/20267171373418951SalesTaxAct1990updatedupto30.06.2026.pdf) |
-| `FA_2026` | Finance Act, 2026 | 256 | 274 | [download](https://download1.fbr.gov.pk/Docs/20266291261044366FinanceAct2026.pdf) |
+| `FA_2026` | Finance Act, 2026 | 256 | 276 | [download](https://download1.fbr.gov.pk/Docs/20266291261044366FinanceAct2026.pdf) |
 | `PSTS_2012` | Punjab Sales Tax on Services Act, 2012 | 100 | 167 | [pra.punjab.gov.pk](https://pra.punjab.gov.pk), saved as `punjab-sales-tax-on-services-act-2012-pdf2.pdf` |
 | `WHT_CARD_2026` | FBR Withholding Tax Rate Card | 18 | 39 | [download](https://download1.fbr.gov.pk/Docs/202681113864992WithholdingTaxRatesCard2027.pdf) |
 | `FEM_06`, `FEM_10`, `FEM_12`, `FEM_14`, `FEM_21` | SBP Foreign Exchange Manual, chapters 6, 10, 12, 14, 21 | 110 | 251 | [sbp.org.pk/fe_manual](https://www.sbp.org.pk/fe_manual/index.htm) |
