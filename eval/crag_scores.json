@@ -1,0 +1,122 @@
+{
+  "What is the tax rate on IT export services for PSEB registered exporters?": {
+    "faithfulness": 0.5555555555555556,
+    "answer_relevancy": 0.9008985569303071,
+    "context_precision": 0.49999999995,
+    "context_recall": 1.0
+  },
+  "What is the withholding tax rate for local IT and IT enabled services under Section 153?": {
+    "faithfulness": 0.8888888888888888,
+    "answer_relevancy": 0.8914444621487408,
+    "context_precision": 0.99999999995,
+    "context_recall": 1.0
+  },
+  "What is the standard rate of federal sales tax?": {
+    "faithfulness": 0.75,
+    "answer_relevancy": 0.9999999999999994,
+    "context_precision": 0.99999999995,
+    "context_recall": 1.0
+  },
+  "What is the Punjab sales tax rate on hotels?": {
+    "faithfulness": 0.8571428571428571,
+    "answer_relevancy": 0.9539656003560656,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  "How long can an exporter retain export proceeds in foreign currency with an Authorized Dealer?": {
+    "faithfulness": 0.9,
+    "answer_relevancy": 0.9963581968435854,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  "Do companies need State Bank approval to remit dividends to non-resident shareholders?": {
+    "faithfulness": null,
+    "answer_relevancy": 0.9485799044007748,
+    "context_precision": 0.99999999995,
+    "context_recall": 1.0
+  },
+  "Who can open a Foreign Currency Value Account?": {
+    "faithfulness": 0.875,
+    "answer_relevancy": 0.9454292381336922,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  "Is there any restriction on receiving remittances from abroad?": {
+    "faithfulness": 0.9230769230769231,
+    "answer_relevancy": 0.9484163244132692,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  "What must be enclosed with half yearly statements of foreign exchange receipts?": {
+    "faithfulness": 0.8571428571428571,
+    "answer_relevancy": 0.9483506434030079,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  "Which option do I choose in IRIS to file a normal income tax return?": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.9442180870905927,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  "When does the Finance Act, 2026 come into force?": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.986766293147194,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  "When did the Income Tax Rules, 2002 come into force?": {
+    "faithfulness": 0.8,
+    "answer_relevancy": 1.0000000000000002,
+    "context_precision": 0.99999999995,
+    "context_recall": 1.0
+  },
+  "freelancer ki IT export income pe tax kitna lagta hai agar PSEB registered ho?": {
+    "faithfulness": 0.7272727272727273,
+    "answer_relevancy": 0.9404802471325366,
+    "context_precision": 0.5833333333041666,
+    "context_recall": 1.0
+  },
+  "What is the withholding tax on rent if an individual receives Rs. 500,000 a year?": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.9593105522410722,
+    "context_precision": 0.8055555555287036,
+    "context_recall": 1.0
+  },
+  "sales tax ka normal rate kya hai Pakistan mein?": {
+    "faithfulness": 0.7142857142857143,
+    "answer_relevancy": 0.9867669635350774,
+    "context_precision": 0.99999999995,
+    "context_recall": 1.0
+  },
+  "Punjab mein marriage hall pe kitna sales tax hai?": {
+    "faithfulness": 0.7142857142857143,
+    "answer_relevancy": 0.9638458578898418,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  "Within how many days must the export value of goods be received in Pakistan?": {
+    "faithfulness": 0.9090909090909091,
+    "answer_relevancy": 0.7794840721082613,
+    "context_precision": 0.0,
+    "context_recall": 0.0
+  },
+  "IRIS mein salary kahan enter karni hai?": {
+    "faithfulness": 0.8888888888888888,
+    "answer_relevancy": 0.9719795563182269,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  "What motor vehicle tax does the Finance Act 2026 set in Islamabad for cars up to 1000 cc?": {
+    "faithfulness": 0.375,
+    "answer_relevancy": 0.9573797146092452,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  },
+  "Which entertainment expenditure is deductible under the Income Tax Rules?": {
+    "faithfulness": 0.9230769230769231,
+    "answer_relevancy": 0.888741434000548,
+    "context_precision": 0.9999999999,
+    "context_recall": 1.0
+  }
+}

@@ -219,10 +219,12 @@ python eval/ragas_suite.py naive
 python eval/ragas_suite.py crag
 ```
 
+Set `EVAL_LIMIT=20` to run a subset picked round-robin across sources (the free Gemini tier allows 15 requests a minute). Scores below are on that 20-question subset, judged by gemini-3.5-flash-lite.
+
 | Pipeline | Faithfulness | Answer relevancy | Context precision | Context recall | p50 latency |
 |---|---|---|---|---|---|
-| naive | – | – | – | – | – |
-| crag | – | – | – | – | – |
+| naive | 0.965 | 0.909 | 0.915 | 1.000 | 13.3 s |
+| crag | 0.824 | 0.946 | 0.894 | 0.950 | 16.2 s |
 
 ## Known limits
 

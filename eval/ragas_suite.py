@@ -31,7 +31,16 @@ SCORE_ATTEMPTS = 3
 
 
 def load_questions():
-    return [json.loads(line) for line in EVAL_SET.read_text(encoding="utf-8").splitlines() if line.strip()]
+    items = [json.loads(line) for line in EVAL_SET.read_text(encoding="utf-8").splitlines() if line.strip()]
+    limit = int(os.getenv("EVAL_LIMIT", 0))
+    if not limit:
+        return items
+    by_source = defaultdict(list)
+    for item in items:
+        by_source[item["sources"][0]].append(item)
+    # round-robin across sources so a cut set still covers every document
+    picked = [group[i] for i in range(max(map(len, by_source.values()))) for group in by_source.values() if i < len(group)]
+    return picked[:limit]
 
 
 def pipelines():
@@ -48,7 +57,8 @@ def run(name):
     path = ROOT / "eval" / f"{name}_results.json"
     done = {r["question"]: r for r in json.loads(path.read_text(encoding="utf-8"))} if path.exists() else {}
     answer = pipelines()[name]
-    for i, item in enumerate(load_questions(), 1):
+    questions = load_questions()
+    for i, item in enumerate(questions, 1):
         if item["query"] in done:
             continue
         print(f"[{i}] {item['query']}")
@@ -72,7 +82,7 @@ def run(name):
             "seconds": round(time.perf_counter() - started, 2),
         }
         path.write_text(json.dumps(list(done.values()), ensure_ascii=False, indent=2), encoding="utf-8")
-    return list(done.values())
+    return [done[item["query"]] for item in questions if item["query"] in done]
 
 
 def judge():
@@ -123,6 +133,7 @@ def mean(values):
 
 
 def report(results, scores):
+    scores = {r["question"]: scores.get(r["question"], {}) for r in results}
     summary = {metric: mean(s.get(metric) for s in scores.values()) for metric in ("faithfulness", "answer_relevancy", "context_precision", "context_recall")}
     summary["unscored"] = sum(v is None for s in scores.values() for v in s.values())
     summary["source_hit_rate"] = mean(float(r["hit"]) for r in results)
